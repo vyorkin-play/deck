@@ -1,0 +1,15 @@
+[ignore]
+.*/node_modules/.*[^e]\.json$
+
+[include]
+
+[libs]
+
+[options]
+module.name_mapper='.*\(.css\)' -> 'empty/object'
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.css
+module.file_ext=.sss
+suppress_type=$FlowIssue
+suppress_type=$FlowFixMe
