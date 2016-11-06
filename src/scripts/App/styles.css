@@ -1,0 +1,12 @@
+@import "index";
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.figure {
+  background: svg('ei#chart', '[fill]: hotpink');
+  size: 256px;
+}

@@ -2,6 +2,7 @@
 
 import { Component } from 'react';
 import classnames from 'classnames';
+import Icon from '../components/Icon';
 import styles from './styles';
 
 type Props = {
@@ -45,6 +46,7 @@ export default class Button extends Component<DefaultProps, Props, State> {
         onMouseDown={this.onMouseDown}
         onClick={this.props.onClick}
       >
+        <Icon value='add-folder' fill='#fff' />
         {this.props.title}
       </div>
     );

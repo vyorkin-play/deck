@@ -1,6 +1,9 @@
 start:
 	npm start
 
+clean:
+	npm run clean
+
 lint:
 	npm run lint --silent
 
@@ -8,9 +11,10 @@ check:
 	flow
 
 build:
+	npm run clean
 	npm run build:production
 
 test:
 	npm test
 
-.PHONY: start lint check test build
+.PHONY: start clean lint check test build

@@ -1,0 +1,33 @@
+@import "normalize.css";
+@import "theme";
+@import "variables";
+
+html {
+  text-rendering: optimizeLegibility;
+  font-smoothing: antialiased;
+}
+
+html,
+body {
+  font-size: var(--font-size);
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--fg0);
+  font-family: "Roboto";
+}
+
+a {
+  color: var(--link-color);
+  &:hover { color: var(--link-hover-color); }
+}

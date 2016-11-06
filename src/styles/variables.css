@@ -1,0 +1,33 @@
+@import "theme";
+
+:root {
+  --bg0: var(--base07);
+  --bg1: var(--base05);
+  --bg2: var(--base06);
+
+  --fg0: var(--base00);
+  --fg1: var(--base01);
+  --fg2: var(--base02);
+  --fg3: var(--base03);
+  --fg4: var(--base04);
+
+  --color-black: #000;
+  --color-white: #fff;
+
+  --color-info: var(--base0C);
+  --color-success: var(--base0B);
+  --color-warning: var(--base0A);
+  --color-danger: var(--base09);
+
+  --font-family: "Roboto";
+
+  /* 1em = 10px */
+  --font-size: 62.5%;
+  --font-size-base: 1.8rem;
+
+  --link-color: var(--base0C);
+  --link-hover-color: color(var(--base0C) tint(15%));
+
+  --border-radius: 0.4rem;
+  --shadow-color: color(var(--bg0) shade(50%));
+}

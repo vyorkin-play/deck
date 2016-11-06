@@ -12,18 +12,25 @@ const compiler = webpack(config);
 app.use(devMiddleware(compiler, {
   publicPath: config.output.publicPath,
   historyApiFallback: true,
+  noInfo: true,
+  stats: 'errors-only',
 }));
 
 app.use(hotMiddleware(compiler));
-
-app.get('*', (req, res) => res.sendFile(join(__dirname, 'dist/index.html')));
+app.use('*', (req, res, next) => {
+  const filename = join(compiler.outputPath, 'index.html');
+  compiler.outputFileSystem.readFile(filename, (err, result) => {
+    if (err) {
+      return next(err);
+    }
+    res.set('content-type', 'text/html');
+    res.send(result);
+    return res.end();
+  });
+});
 
 /* eslint-disable no-console */
 app.listen(3000, (err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('Listening at http://localhost:3000/');
-  }
+  if (err) console.error(err);
 });
 /* eslint-enable no-console */

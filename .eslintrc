@@ -31,6 +31,8 @@
       "devDependencies": true,
       "optionalDependencies": false,
     }],
+
+    "no-duplicate-imports": [0],
     "no-confusing-arrow": 0,
     "no-underscore-dangle": 0,
     "semi": ["error", "always"],
@@ -79,5 +81,8 @@
     "React": true,
     "NODE_ENV": true,
     "__COMMITHASH__": true,
+    "__ENV__": true,
+    "__DEVELOPMENT__": true,
+    "__PRODUCTION__": true,
   }
 }
