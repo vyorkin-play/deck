@@ -3,6 +3,7 @@ const { castArray, pick, compact, isFunction } = require('lodash/fp');
 const chalk = require('chalk');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const combineLoaders = require('webpack-combine-loaders');
@@ -13,28 +14,30 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const pkg = require('./package');
 
 const paths = {
-  src: resolve(__dirname, 'src'),
-  assets: resolve(__dirname, 'src/assets'),
-  templates: resolve(__dirname, 'src/templates'),
-  styles: resolve(__dirname, 'src/styles'),
-  scripts: resolve(__dirname, 'src/scripts'),
+  src: resolve('src'),
+  assets: resolve('src/assets'),
+  templates: resolve('src/templates'),
+  styles: resolve('src/styles'),
+  scripts: resolve('src/scripts'),
 };
 
-const getKnownEnvironments = pick(['test', 'development', 'staging', 'production']);
+const getKnownEnvironments = pick([
+  'test',
+  'development',
+  'staging',
+  'production',
+]);
 
-const baseLoader = (loader, test, prefix, options = {}) => ({
-  loader,
+const urlLoader = (loader, test, prefix) => ({
+  loader: 'url',
   test,
   include: paths.src,
-  options: Object.assign({}, { // eslint-disable-line prefer-object-spread/prefer-object-spread
+  options: {
     name: '[name].[ext]',
     prefix: `${prefix}/`,
-  }, options),
+    limit: 1024,
+  },
 });
-
-const urlLoader = (test, prefix) => baseLoader(
-  'url', test, prefix, { limit: 1024 }
-);
 
 module.exports = env => {
   const environments = getKnownEnvironments(env);
@@ -59,7 +62,7 @@ module.exports = env => {
       options: {
         modules: true,
         importLoaders: 1,
-        sourceMap: ifEnv('development', true, false),
+        sourceMap: ifEnv(['development', 'staging'], true, false),
         localIdentName: ifEnv(
           'development',
           '[name]-[local]--[hash:base64:5]',
@@ -78,26 +81,18 @@ module.exports = env => {
         'babel-polyfill',
         './scripts/index',
       ]),
-      vendor: [
-        'babel-polyfill',
-        'react',
-        'react-dom',
-        'lodash',
-        'classnames',
-        'recompose',
-      ],
     },
     output: {
       filename: ifEnv('production', '[name].[chunkhash].js', '[name].js'),
-      path: resolve(__dirname, 'dist'),
+      path: resolve('dist'),
       publicPath: '',
       pathinfo: !env.production,
     },
-    context: resolve(__dirname, 'src'),
+    context: paths.src,
     devtool: ifEnv(
       ['production', 'staging'],
-      ifEnv('staging', 'source-map', false),
-      'eval-source-map'
+      ifEnv('staging', '#source-map', false),
+      '#inline-eval-cheap-source-map'
     ),
     bail: env.production,
     resolve: {
@@ -121,6 +116,11 @@ module.exports = env => {
         {
           test: /\.js$/,
           loader: 'babel',
+          include: paths.scripts,
+        },
+        {
+          test: /\.pegjs$/,
+          loader: 'pegjs',
           include: paths.scripts,
         },
         ifEnv('production', () => ({
@@ -175,25 +175,30 @@ module.exports = env => {
       ],
     },
     plugins: compact([
-      new webpack.ProvidePlugin({
-        React: 'react',
-      }),
+      new webpack.ProvidePlugin({ React: 'react' }),
+      ifEnv('development', () => new webpack.DllReferencePlugin({
+        context: resolve('dist'),
+        manifest: require('./dist/vendor-manifest'), // eslint-disable-line global-require
+      })),
       new HtmlWebpackPlugin({
         title: pkg.description,
         template: 'templates/index.pug',
       }),
+      ifEnv('development', () => new AddAssetHtmlPlugin({
+        filepath: require.resolve('./dist/vendor.dll'),
+        includeSourcemap: ifEnv(['development', 'staging'], true),
+      })),
       new ProgressBarPlugin({
         width: 12,
         format: `[${chalk.blue(':bar')}] ${chalk.green.bold(':percent')} ${chalk.magenta(':msg')} (:elapsed seconds)`,
         clear: true,
         summary: false,
       }),
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor',
-      }),
+      new webpack.optimize.CommonsChunkPlugin({ name: 'vendor' }),
       new LodashModuleReplacementPlugin(),
       new webpack.DefinePlugin({
         __DEVELOPMENT__: environmentName === 'development',
+        __STAGING__: environmentName === 'staging',
         __PRODUCTION__: environmentName === 'production',
         __ENV__: JSON.stringify(environmentName),
         __COMMITHASH__: JSON.stringify(new GitRevisionPlugin().commithash()),

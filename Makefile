@@ -1,20 +1,17 @@
 start:
 	npm start
-
-clean:
-	npm run clean
-
-lint:
-	npm run lint --silent
-
-check:
-	flow
-
-build:
-	npm run clean
-	npm run build:production
-
 test:
 	npm test
+lint:
+	npm run lint
+dll:
+	npm run build:dll
+build:
+	npm run clean
+	npm run build
+commit:
+	npm run commit
+release:
+	npm run release
 
-.PHONY: start clean lint check test build
+.PHONY: start test lint dll build commit release

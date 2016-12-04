@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls {
+  margin: 12px 0;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+}
+
+.graph {
+}
+
+.circle {
+}
+
+.circle:hover {
+  fill: steelblue;
+}
+
+.text {
+  fill: #444;
+  font-size: 12px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stoke: #000;
+}
+
+.axis text {
+}
